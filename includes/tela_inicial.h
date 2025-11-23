@@ -3,8 +3,12 @@
 
 #include "raylib.h"
 
-void DrawTelaInicial();
 
-int UpdateTelaInicial();
+void InitTelaInicial();   
+void UnloadTelaInicial(); 
+
+
+void DrawTelaInicial();   
+int UpdateTelaInicial();  
 
 #endif
