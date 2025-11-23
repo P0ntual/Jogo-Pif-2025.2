@@ -1,8 +1,8 @@
 #include "raylib.h"
 #include "personagem.h"
 #include "tela_inicial.h"
+#include "game_over.h" 
 #include "paredes.h"
-
 
 typedef enum GameScreen { MENU, GAMEPLAY, GAMEOVER } GameScreen;
 
@@ -11,26 +11,44 @@ int main(void)
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
-    InitWindow(screenWidth, screenHeight, "Meu Jogo - Game Over");
+    InitWindow(screenWidth, screenHeight, "FLY");
     
     InitTelaInicial();
+    InitGameOver(); 
+    
     SetTargetFPS(60);
 
     Personagem player;
-    InitPersonagem(&player); 
+    InitPersonagem(&player);
 
     ParedeNode* listaParedes = InicializarParedes(screenWidth, screenHeight);
+
+   
+    Camera2D camera = { 0 };
+    camera.target = (Vector2){ 0, 0 };
+    camera.offset = (Vector2){ 0, 0 };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+
+    float velocidadeCamera = 1.0f;
 
     GameScreen currentScreen = MENU;
 
     while (!WindowShouldClose())
     {
-        
         switch(currentScreen) 
         {
             case MENU:
                 if (UpdateTelaInicial() == 1) {
+                   
                     currentScreen = GAMEPLAY;
+                    InitPersonagem(&player);
+                    
+                    
+                    camera.target = (Vector2){ 0, 0 };
+                    velocidadeCamera = 1.0f;
+                    
+                    
                 }
                 break;
 
@@ -39,26 +57,31 @@ int main(void)
                 VerificarColisaoParedes(listaParedes, &player);
 
                 
-                if (player.posicao.y > screenHeight + 50) {
+                camera.target.y -= velocidadeCamera;
+                velocidadeCamera += 0.0005f; 
+
+                
+                if (player.posicao.y > camera.target.y + screenHeight + 50) {
                     currentScreen = GAMEOVER;
                 }
                 break;
             
             case GAMEOVER:
                 
-                if (IsKeyPressed(KEY_R)) {
-                    InitPersonagem(&player); 
-                    currentScreen = GAMEPLAY;
-                }
+                int acao = UpdateGameOver();
                 
-                if (IsKeyPressed(KEY_ENTER)) {
+                if (acao == 1) { 
+                    currentScreen = GAMEPLAY;
                     InitPersonagem(&player);
+                    camera.target = (Vector2){ 0, 0 };
+                    velocidadeCamera = 1.0f;
+                }
+                else if (acao == 2) { 
                     currentScreen = MENU;
                 }
                 break;
         }
 
-        
         BeginDrawing();
             
             switch(currentScreen) 
@@ -69,16 +92,18 @@ int main(void)
 
                 case GAMEPLAY:
                     ClearBackground(RAYWHITE);
-                    DrawParedes(listaParedes); 
-                    DrawPersonagem(player);
+                    BeginMode2D(camera);
+                        DrawParedes(listaParedes); 
+                        DrawPersonagem(player);
+                    EndMode2D();
+                    
+                    
+                    DrawText(TextFormat("Altura: %.0f", -player.posicao.y), 10, 10, 20, BLACK);
                     break;
 
                 case GAMEOVER:
                     
-                    ClearBackground(MAROON);
-                    DrawText("GAME OVER", 400, 200, 80, WHITE);
-                    DrawText("Pressione 'R' para tentar de novo", 380, 400, 30, LIGHTGRAY);
-                    DrawText("Pressione 'ENTER' para o Menu", 420, 450, 20, GRAY);
+                    DrawGameOver();
                     break;
             }
 
@@ -86,6 +111,7 @@ int main(void)
     }
 
     UnloadTelaInicial();
+    UnloadGameOver(); 
     LiberarParedes(listaParedes); 
 
     CloseWindow();

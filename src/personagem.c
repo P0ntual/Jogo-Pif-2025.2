@@ -14,20 +14,19 @@ void InitPersonagem(Personagem *p)
 
 void UpdatePersonagem(Personagem *p)
 {
-    int alturaTela = GetScreenHeight();
-    
     
     if (IsKeyDown(KEY_RIGHT)) p->posicao.x += p->velocidade;
     if (IsKeyDown(KEY_LEFT))  p->posicao.x -= p->velocidade;
 
-   
-    if (IsKeyPressed(KEY_SPACE)&& p->gravidade == 0) {
-        p->gravidade = -18.0f; 
+    
+    
+    if (IsKeyPressed(KEY_SPACE) && p->gravidade >= 0 && p->gravidade <= 1.0f) {
+        p->gravidade = -FORCA_PULO; 
     }
 
-   
-    p->posicao.y += p->gravidade;
-    p->gravidade += 0.8f;        
+    
+    p->posicao.y += p->gravidade; 
+    p->gravidade += G_FORCA;      
 }
 
 void DrawPersonagem(Personagem p)

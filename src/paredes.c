@@ -13,66 +13,65 @@ void AdicionarParede(ParedeNode** head, Rectangle rect) {
 ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
     ParedeNode* lista = NULL; 
     
+    
+    int espessura = 100;
+    
    
-    float alturaChao = 600;
-    float larguraPlat = 300;
-    float alturaPlat = 40;
+    int alturaNivel = 10000; 
 
     
-    AdicionarParede(&lista, (Rectangle){ 0, alturaChao, larguraPlat, alturaPlat });
-  
-    AdicionarParede(&lista, (Rectangle){ 400, alturaChao, larguraPlat, alturaPlat });
+    AdicionarParede(&lista, (Rectangle){ -espessura, -alturaNivel, espessura, alturaNivel + screenHeight });
     
-    AdicionarParede(&lista, (Rectangle){ 800, alturaChao, larguraPlat, alturaPlat });
+    AdicionarParede(&lista, (Rectangle){ screenWidth, -alturaNivel, espessura, alturaNivel + screenHeight });
+
     
-    AdicionarParede(&lista, (Rectangle){ 1200, alturaChao, larguraPlat, alturaPlat });
+    AdicionarParede(&lista, (Rectangle){ 0, 650, screenWidth, 40 });
+
+    
+    int numPlataformas = 100; 
+    float yAtual = 500;       
+    
+    for (int i = 0; i < numPlataformas; i++) {
+        
+        
+        float largura = GetRandomValue(150, 400);
+        
+        
+        float x = GetRandomValue(50, screenWidth - largura - 50);
+        
+        
+        float altura = 30;
+
+        
+        AdicionarParede(&lista, (Rectangle){ x, yAtual, largura, altura });
+
+       
+        yAtual -= GetRandomValue(130, 180);
+    }
 
     return lista;
 }
 
+
 void VerificarColisaoParedes(ParedeNode* head, Personagem* p) {
     ParedeNode* atual = head;
-
     while (atual != NULL) {
         Rectangle r = atual->retangulo;
-
-        
-        Rectangle playerRect = { 
-            p->posicao.x - p->raio, 
-            p->posicao.y - p->raio, 
-            p->raio * 2, 
-            p->raio * 2 
-        };
+        Rectangle playerRect = { p->posicao.x - p->raio, p->posicao.y - p->raio, p->raio * 2, p->raio * 2 };
 
         if (CheckCollisionRecs(playerRect, r)) {
-           
-            
             Rectangle interseccao = GetCollisionRec(playerRect, r);
-
-           
             if (interseccao.width > interseccao.height) {
-                
-                
                 if (p->posicao.y < r.y + (r.height/2)) {
                     p->posicao.y = r.y - p->raio;
                     if (p->gravidade > 0) p->gravidade = 0;
-                }
-               
-                else {
+                } else {
                     p->posicao.y = r.y + r.height + p->raio;
                     if (p->gravidade < 0) p->gravidade = 0;
                 }
-            }
-            
-            else {
-                
-                if (p->posicao.x < r.x) {
-                    p->posicao.x = r.x - p->raio;
-                }
-                
-                else {
-                    p->posicao.x = r.x + r.width + p->raio;
-                }
+            } else {
+                if (p->posicao.x < r.x) p->posicao.x = r.x - p->raio;
+                else p->posicao.x = r.x + r.width + p->raio;
             }
         }
         atual = atual->proximo; 
