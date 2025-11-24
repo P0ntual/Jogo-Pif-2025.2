@@ -1,36 +1,49 @@
-# Jogo-Pif-2025.2
-Jogo de pif do segundo semestre.
+# FLY 
 
-Tutorial de como instalar o raylib: 
-1. Instalar as Dependências
-Primeiro, instale as ferramentas de compilação (build-essential), o git (para baixar o código) e todas as bibliotecas gráficas e de áudio que o Raylib precisa:
-No bash digite
+FLY é um jogo de plataforma vertical desenvolvido em **C** utilizando a biblioteca **Raylib**. 
+
+![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow)
+![Language](https://img.shields.io/badge/C-Linux%2FWSL-blue)
+
+## Pré-requisitos
+
+Este jogo foi desenvolvido para rodar em ambiente **Linux** ou **WSL (Windows Subsystem for Linux)**.
+
+**Nota:** Possua a **Raylib** já instalada em seu sistema.
+
+### Instalação das Dependências de Sistema:
+
+Para garantir que o som e a janela funcionem corretamente (especialmente no WSL), instale as bibliotecas de suporte abaixo.
+
+# 1. Atualize o sistema:
 sudo apt update
-sudo apt install build-essential git libasound2-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 
-2. Baixar o Código-Fonte
-Use o git para baixar (clonar) a última versão do Raylib do GitHub para uma nova pasta chamada raylib:
-No bash digite
-git clone https://github.com/raysan5/raylib.git raylib
+# 2. Instale ferramentas de compilação e Git:
+sudo apt install build-essential git
 
-3. Compilar o Raylib
-Agora, vamos entrar na pasta do código-fonte e compilar o projeto.
+# 3. Instale drivers de áudio e dependências gráficas:
+sudo apt install libasound2-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev pulseaudio libpulse-dev
 
-Entre na pasta src do Raylib:
-No bash digite
-cd raylib/src
-Execute o comando make para compilar para a plataforma Desktop:
-No bash digite
-make PLATFORM=PLATFORM_DESKTOP
+# Dica: Se estiver no Ubuntu 24.04 ou superior, adicione também:
+# sudo apt install libasound2t64
 
-4. Instalar os Arquivos no Sistema
-Após a compilação, instale os arquivos da biblioteca e os cabeçalhos (.h) em um local padrão do sistema para que o compilador (gcc) possa encontrá-los:
-No bash digite
-sudo make install
+### Clonagem de Repositório: 
 
-5. Atualizar o Cache de Bibliotecas
-Execute este comando final para que o Linux reconheça a nova biblioteca que você acabou de instalar:
-No bash digite
-sudo ldconfig
+# 1. Clonagem:
+git clone [https://github.com/P0ntual/Jogo-Pif-2025.2.git](https://github.com/P0ntual/Jogo-Pif-2025.2.git)
+cd Jogo-Pif-2025.2
 
-Tudo pronto para rodar o jogo!
+# 2. Compilação:
+gcc src/main.c src/personagem.c src/tela_inicial.c src/game_over.c src/paredes.c src/cenario.c src/audio.c -o output/meujogo -I includes -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
+#3. Execução: 
+./output/meujogo
+
+## Créditos dos Assets
+Fonte: Polar Snow (Assets/Fonts)
+
+Música: "First Snow" por Lolurio (Itch.io)
+
+Fundo: Winter Background (Itch.io/CraftPix)
+
+Biblioteca: Raylib
