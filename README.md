@@ -25,7 +25,7 @@ sudo apt install build-essential git
 sudo apt install libasound2-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev pulseaudio libpulse-dev
 
 # Dica: Se estiver no Ubuntu 24.04 ou superior, adicione também:
-# sudo apt install libasound2t64
+sudo apt install libasound2t64
 
 ### Clonagem de Repositório: 
 
