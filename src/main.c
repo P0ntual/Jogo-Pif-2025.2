@@ -1,4 +1,7 @@
 #include "raylib.h"
+#include <stdlib.h> 
+#include <stdio.h>
+#include <time.h> 
 #include "personagem.h"
 #include "tela_inicial.h"
 #include "game_over.h"
@@ -11,6 +14,8 @@ typedef enum GameScreen { MENU, GAMEPLAY, GAMEOVER } GameScreen;
 
 int main(void)
 {
+    SetRandomSeed(time(0)); 
+
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
@@ -24,6 +29,8 @@ int main(void)
     InitParedesAssets();
     InitNeve(); 
     
+    Font fonteInterface = LoadFontEx("assets/fonts/fonteinterface.ttf", 64, 0, 0);
+
     SetTargetFPS(60);
 
     Personagem player;
@@ -50,10 +57,15 @@ int main(void)
             case MENU:
                 if (UpdateTelaInicial() == 1) {
                     currentScreen = GAMEPLAY;
+                    
+                    
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
                     InitNeve();
+                    
+                   
+                    listaParedes = ResetarParedes(listaParedes, screenWidth, screenHeight);
                 }
                 break;
 
@@ -72,14 +84,20 @@ int main(void)
             
             case GAMEOVER:
                 int acao = UpdateGameOver();
-                if (acao == 1) {
+                if (acao == 1) { 
                     currentScreen = GAMEPLAY;
+                    
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
                     InitNeve(); 
+                    
+                 
+                    listaParedes = ResetarParedes(listaParedes, screenWidth, screenHeight);
                 }
-                else if (acao == 2) currentScreen = MENU;
+                else if (acao == 2) { 
+                     currentScreen = MENU;
+                }
                 break;
         }
 
@@ -93,17 +111,43 @@ int main(void)
 
                 case GAMEPLAY:
                     ClearBackground(RAYWHITE);
-                    
                     DrawCenario(); 
                     DrawNeve();    
                     
                     BeginMode2D(camera);
-                        
                         DrawParedes(listaParedes); 
                         DrawPersonagem(player);
                     EndMode2D();
                     
-                    DrawText(TextFormat("Altura: %.0f", -player.posicao.y), 10, 10, 20, BLACK);
+                   
+                    float alturaAtual = (360.0f - player.posicao.y) / 10.0f;
+                    if (alturaAtual < 0) alturaAtual = 0;
+
+                    const char* textoPontuacao = TextFormat("ALTURA: %.0f m", alturaAtual);
+                    
+                    float tamanhoFonte = 40.0f;
+                    float padding = 20.0f; 
+                    
+                    Vector2 tamanhoTexto = { 300, 40 };
+                    if (fonteInterface.texture.id > 0) {
+                        tamanhoTexto = MeasureTextEx(fonteInterface, textoPontuacao, tamanhoFonte, 2.0f);
+                    } 
+
+                    float larguraCaixa = tamanhoTexto.x + (padding * 2);
+                    float alturaCaixa = 80.0f;
+
+                    DrawRectangle(0, 0, (int)larguraCaixa, (int)alturaCaixa, (Color){ 20, 20, 20, 230 });
+                    DrawLineEx((Vector2){0, alturaCaixa}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
+                    DrawLineEx((Vector2){larguraCaixa, 0}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
+
+                    Vector2 posicaoTexto = { padding, (alturaCaixa - tamanhoTexto.y) / 2.0f };
+
+                    if (fonteInterface.texture.id > 0) {
+                         DrawTextEx(fonteInterface, textoPontuacao, (Vector2){posicaoTexto.x+2, posicaoTexto.y+2}, tamanhoFonte, 2.0f, BLACK);
+                         DrawTextEx(fonteInterface, textoPontuacao, posicaoTexto, tamanhoFonte, 2.0f, WHITE);
+                    } else {
+                        DrawText(textoPontuacao, (int)padding, 20, 40, WHITE);
+                    }
                     break;
 
                 case GAMEOVER:
@@ -120,6 +164,7 @@ int main(void)
     UnloadAudio();
     UnloadPersonagemAssets();
     UnloadParedesAssets();
+    UnloadFont(fonteInterface);
    
     LiberarParedes(listaParedes); 
 

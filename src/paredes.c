@@ -1,7 +1,25 @@
 #include "paredes.h"
+#include "raylib.h"
+#include "personagem.h" 
 #include <stdlib.h> 
 #include <stdio.h>
 #include <math.h> 
+
+
+static Texture2D texturaPlataforma;
+
+
+
+void InitParedesAssets() {
+    
+    texturaPlataforma = LoadTexture("assets/images/plataforma.png");
+}
+
+void UnloadParedesAssets() {
+    UnloadTexture(texturaPlataforma);
+}
+
+
 
 void AdicionarParede(ParedeNode** head, Rectangle rect) {
     ParedeNode* novoNo = (ParedeNode*)malloc(sizeof(ParedeNode));
@@ -17,12 +35,12 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
     int alturaNivel = 10000; 
     int larguraGigante = 5000;
 
+   
     AdicionarParede(&lista, (Rectangle){ -1000, -alturaNivel, larguraGigante, espessura }); 
-    
     AdicionarParede(&lista, (Rectangle){ -espessura, -alturaNivel, espessura, alturaNivel + screenHeight });
-
     AdicionarParede(&lista, (Rectangle){ screenWidth, -alturaNivel, espessura, alturaNivel + screenHeight });
-
+    
+    
     AdicionarParede(&lista, (Rectangle){ 0, 650, screenWidth, 40 });
 
     int numPlataformas = 100; 
@@ -32,17 +50,20 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
 
     for (int i = 0; i < numPlataformas; i++) {
         
-        float distanciaY = GetRandomValue(80, 170);
+        
+        float distanciaY = GetRandomValue(130, 210); 
         float novoY = ultimoY - distanciaY;
 
+        
         float desvioX = GetRandomValue(-300, 300);
         float novoCentroX = ultimoX + desvioX;
 
-       
-        float largura = GetRandomValue(150, 350);
+        
+        float largura = 250.0f; 
+        
         float novoX = novoCentroX - (largura / 2);
-
-       
+        
+        
         if (novoX < 50) {
             novoX = 50;
             novoCentroX = novoX + (largura / 2); 
@@ -52,7 +73,6 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
             novoCentroX = novoX + (largura / 2);
         }
 
-       
         AdicionarParede(&lista, (Rectangle){ novoX, novoY, largura, 30 });
 
         ultimoY = novoY;
@@ -91,9 +111,24 @@ void VerificarColisaoParedes(ParedeNode* head, Personagem* p) {
 
 void DrawParedes(ParedeNode* head) {
     ParedeNode* atual = head;
+
+    
+    int imagemOk = (texturaPlataforma.id > 0 && texturaPlataforma.width > 0);
+
     while (atual != NULL) {
-        DrawRectangleRec(atual->retangulo, DARKGRAY);
-        DrawRectangleLinesEx(atual->retangulo, 2, LIGHTGRAY);
+        
+        if (imagemOk) {
+           
+            Rectangle source = { 0.0f, 0.0f, (float)texturaPlataforma.width, (float)texturaPlataforma.height };
+            Rectangle dest = atual->retangulo;
+            Vector2 origin = { 0.0f, 0.0f };
+            DrawTexturePro(texturaPlataforma, source, dest, origin, 0.0f, WHITE);
+        } else {
+           
+            DrawRectangleRec(atual->retangulo, RED);
+            DrawRectangleLinesEx(atual->retangulo, 2, YELLOW);
+        }
+        
         atual = atual->proximo;
     }
 }
@@ -105,4 +140,13 @@ void LiberarParedes(ParedeNode* head) {
         atual = atual->proximo;
         free(temp); 
     }
+}
+
+
+ParedeNode* ResetarParedes(ParedeNode* listaAntiga, int screenWidth, int screenHeight) {
+    
+    LiberarParedes(listaAntiga);
+    
+    
+    return InicializarParedes(screenWidth, screenHeight);
 }

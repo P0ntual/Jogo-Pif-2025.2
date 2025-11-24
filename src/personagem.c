@@ -1,4 +1,5 @@
 #include "personagem.h"
+#include "raylib.h" 
 #include <stdio.h>
 
 #define G_FORCA 0.8f
@@ -7,6 +8,7 @@
 static Texture2D spritePersonagem;
 
 void InitPersonagemAssets() {
+   
     spritePersonagem = LoadTexture("assets/images/personagem.png");
     
   
@@ -17,15 +19,12 @@ void UnloadPersonagemAssets() {
     UnloadTexture(spritePersonagem);
 }
 
-
 void InitPersonagem(Personagem *p)
 {
     p->posicao = (Vector2){ 200, 360 };
     p->velocidade = 5.0f;
     p->gravidade = 0.0f;
     p->raio = 20.0f; 
-    
-   
     p->color = WHITE;   
 }
 
@@ -44,22 +43,20 @@ void UpdatePersonagem(Personagem *p)
 
 void DrawPersonagem(Personagem p)
 {
-    
+   
     if (spritePersonagem.id <= 0) {
         DrawCircleV(p.posicao, p.raio, RED);
         return;
     }
 
-    
-
     Rectangle source = { 0.0f, 0.0f, (float)spritePersonagem.width, (float)spritePersonagem.height };
 
-    float escalaVisual = 7.0f; 
+    float escalaVisual = 6.5f; 
 
     float destWidth = p.raio * escalaVisual; 
     float destHeight = p.raio * escalaVisual;
    
-
+    
     Rectangle dest = {
         p.posicao.x - (destWidth / 2.0f), 
         p.posicao.y - (destHeight / 2.0f), 

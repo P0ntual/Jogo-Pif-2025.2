@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "tela_inicial.h": "c"
+        "tela_inicial.h": "c",
+        "math.h": "c",
+        "raylib.h": "c"
     }
 }
