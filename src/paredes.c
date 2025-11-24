@@ -33,10 +33,7 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
     
     int espessura = 100;
     int alturaNivel = 10000; 
-    int larguraGigante = 5000;
-
-   
-    AdicionarParede(&lista, (Rectangle){ -1000, -alturaNivel, larguraGigante, espessura }); 
+     
     AdicionarParede(&lista, (Rectangle){ -espessura, -alturaNivel, espessura, alturaNivel + screenHeight });
     AdicionarParede(&lista, (Rectangle){ screenWidth, -alturaNivel, espessura, alturaNivel + screenHeight });
     
