@@ -1,5 +1,5 @@
 #include "personagem.h"
-#include "raylib.h" 
+#include "raylib.h"
 #include <stdio.h>
 
 #define G_FORCA 0.8f
@@ -8,10 +8,7 @@
 static Texture2D spritePersonagem;
 
 void InitPersonagemAssets() {
-   
     spritePersonagem = LoadTexture("assets/images/personagem.png");
-    
-  
     SetTextureFilter(spritePersonagem, TEXTURE_FILTER_POINT);
 }
 
@@ -25,13 +22,23 @@ void InitPersonagem(Personagem *p)
     p->velocidade = 5.0f;
     p->gravidade = 0.0f;
     p->raio = 20.0f; 
-    p->color = WHITE;   
+    p->color = WHITE;
+    
+    
+    p->direcao = 1.0f; 
 }
 
 void UpdatePersonagem(Personagem *p)
 {
-    if (IsKeyDown(KEY_RIGHT)) p->posicao.x += p->velocidade;
-    if (IsKeyDown(KEY_LEFT))  p->posicao.x -= p->velocidade;
+    
+    if (IsKeyDown(KEY_RIGHT)) {
+        p->posicao.x += p->velocidade;
+        p->direcao = 1.0f; 
+    }
+    if (IsKeyDown(KEY_LEFT)) {
+        p->posicao.x -= p->velocidade;
+        p->direcao = -1.0f; 
+    }
 
     if (IsKeyPressed(KEY_SPACE) && p->gravidade >= 0 && p->gravidade <= 1.0f) {
         p->gravidade = -FORCA_PULO;
@@ -43,20 +50,22 @@ void UpdatePersonagem(Personagem *p)
 
 void DrawPersonagem(Personagem p)
 {
-   
     if (spritePersonagem.id <= 0) {
         DrawCircleV(p.posicao, p.raio, RED);
         return;
     }
+    Rectangle source = { 
+        0.0f, 
+        0.0f, 
+        (float)spritePersonagem.width * p.direcao, 
+        (float)spritePersonagem.height 
+    };
 
-    Rectangle source = { 0.0f, 0.0f, (float)spritePersonagem.width, (float)spritePersonagem.height };
-
-    float escalaVisual = 6.5f; 
+    float escalaVisual = 5.5f; 
 
     float destWidth = p.raio * escalaVisual; 
     float destHeight = p.raio * escalaVisual;
    
-    
     Rectangle dest = {
         p.posicao.x - (destWidth / 2.0f), 
         p.posicao.y - (destHeight / 2.0f), 
