@@ -14,12 +14,12 @@ typedef enum GameScreen { MENU, GAMEPLAY, GAMEOVER } GameScreen;
 
 int main(void)
 {
-    SetRandomSeed(time(0)); 
+    SetRandomSeed(time(0));
 
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
-    InitWindow(screenWidth, screenHeight, "FLY");
+    InitWindow(screenWidth, screenHeight, "Meu Jogo Vertical");
     
     InitAudio();
     InitTelaInicial();
@@ -29,7 +29,7 @@ int main(void)
     InitParedesAssets();
     InitNeve(); 
     
-    Font fonteInterface = LoadFontEx("assets/fonts/fonteinterface.ttf", 64, 0, 0);
+    Font fonteInterface = LoadFontEx("assets/fonts/fonteinterface.ttf", 70, 0, 0);
 
     SetTargetFPS(60);
 
@@ -58,14 +58,13 @@ int main(void)
                 if (UpdateTelaInicial() == 1) {
                     currentScreen = GAMEPLAY;
                     
-                    
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
                     InitNeve();
                     
-                   
-                    listaParedes = ResetarParedes(listaParedes, screenWidth, screenHeight);
+                    LiberarParedes(listaParedes);
+                    listaParedes = InicializarParedes(screenWidth, screenHeight);
                 }
                 break;
 
@@ -92,7 +91,6 @@ int main(void)
                     velocidadeCamera = 1.0f;
                     InitNeve(); 
                     
-                 
                     listaParedes = ResetarParedes(listaParedes, screenWidth, screenHeight);
                 }
                 else if (acao == 2) { 
@@ -111,6 +109,7 @@ int main(void)
 
                 case GAMEPLAY:
                     ClearBackground(RAYWHITE);
+                    
                     DrawCenario(); 
                     DrawNeve();    
                     
@@ -119,27 +118,35 @@ int main(void)
                         DrawPersonagem(player);
                     EndMode2D();
                     
-                   
+
                     float alturaAtual = (360.0f - player.posicao.y) / 10.0f;
                     if (alturaAtual < 0) alturaAtual = 0;
 
                     const char* textoPontuacao = TextFormat("ALTURA: %.0f m", alturaAtual);
                     
-                    float tamanhoFonte = 40.0f;
+                    float tamanhoFonte = 40.0f; 
                     float padding = 20.0f; 
                     
-                    Vector2 tamanhoTexto = { 300, 40 };
+                    Vector2 tamanhoTexto = { 0 };
+                    
                     if (fonteInterface.texture.id > 0) {
                         tamanhoTexto = MeasureTextEx(fonteInterface, textoPontuacao, tamanhoFonte, 2.0f);
-                    } 
+                    } else {
+                        tamanhoTexto.x = 300;
+                        tamanhoTexto.y = 40;
+                    }
 
                     float larguraCaixa = tamanhoTexto.x + (padding * 2);
                     float alturaCaixa = 80.0f;
 
+                 
                     DrawRectangle(0, 0, (int)larguraCaixa, (int)alturaCaixa, (Color){ 20, 20, 20, 230 });
+                    
+                   
                     DrawLineEx((Vector2){0, alturaCaixa}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
                     DrawLineEx((Vector2){larguraCaixa, 0}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
 
+             
                     Vector2 posicaoTexto = { padding, (alturaCaixa - tamanhoTexto.y) / 2.0f };
 
                     if (fonteInterface.texture.id > 0) {

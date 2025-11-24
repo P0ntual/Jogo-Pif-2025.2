@@ -2,7 +2,7 @@
 #define NEVE_H_
 
 #include "raylib.h"
-#define MAX_FLOCOS 300
+#define MAX_FLOCOS 50
 
 typedef struct Floco {
     Vector2 posicao;  
