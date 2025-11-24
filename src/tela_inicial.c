@@ -11,7 +11,7 @@ void InitTelaInicial() {
     fonteDoJogo = LoadFontEx("assets/fonts/polarsnoww.ttf", 100, 0, 0);
     SetTextureFilter(fonteDoJogo.texture, TEXTURE_FILTER_BILINEAR);
 
-    imagemFundo = LoadTexture("assets/images/5.png");
+    imagemFundo = LoadTexture("assets/images/3.png");
 }
 
 void UnloadTelaInicial() {

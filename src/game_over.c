@@ -1,26 +1,47 @@
 #include "game_over.h"
+#include "raylib.h" 
 #include <stdio.h>
 
 static Font fonteGameOver;
+static Texture2D fundoGameOver; // Variável estática para a textura de fundo
 
 void InitGameOver() {
     
+    // 1. CARREGAR A TEXTURA DE FUNDO
+    fundoGameOver = LoadTexture("assets/images/5.png"); 
+    // CORREÇÃO: Removemos o .texture
+    SetTextureFilter(fundoGameOver, TEXTURE_FILTER_BILINEAR);
+    
     fonteGameOver = LoadFontEx("assets/fonts/polarsnoww.ttf", 100, 0, 0);
-    SetTextureFilter(fonteGameOver.texture, TEXTURE_FILTER_BILINEAR);
+    // O mesmo se aplica à fonte:
+    SetTextureFilter(fonteGameOver.texture, TEXTURE_FILTER_BILINEAR); // Este está correto, pois Font TEM um campo .texture
 }
 
 void UnloadGameOver() {
+    UnloadTexture(fundoGameOver);
     UnloadFont(fonteGameOver);
 }
 
 void DrawGameOver() {
     
-    ClearBackground(BLUE);
+    // 3. DESENHAR A TEXTURA DE FUNDO
+    if (fundoGameOver.id > 0) {
+        DrawTexturePro(
+            fundoGameOver, 
+            (Rectangle){ 0.0f, 0.0f, (float)fundoGameOver.width, (float)fundoGameOver.height }, 
+            (Rectangle){ 0.0f, 0.0f, (float)GetScreenWidth(), (float)GetScreenHeight() }, 
+            (Vector2){ 0.0f, 0.0f }, 
+            0.0f, 
+            WHITE
+        );
+    } else {
+        ClearBackground(BLUE);
+    }
 
     float centroX = GetScreenWidth() / 2.0f;
     float centroY = GetScreenHeight() / 2.0f;
 
-   
+    
     const char* textoTitulo = "GAME OVER";
     float tamTitulo = 120.0f;
     Vector2 dimTitulo = MeasureTextEx(fonteGameOver, textoTitulo, tamTitulo, 2.0f);
