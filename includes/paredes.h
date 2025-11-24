@@ -9,13 +9,15 @@ typedef struct ParedeNode {
     struct ParedeNode* proximo; 
 } ParedeNode;
 
+
+void InitParedesAssets();  
+void UnloadParedesAssets(); 
+
+
 ParedeNode* InicializarParedes(int screenWidth, int screenHeight);
 void AdicionarParede(ParedeNode** head, Rectangle rect);
 void VerificarColisaoParedes(ParedeNode* head, Personagem* p);
-
-
 void DrawParedes(ParedeNode* head); 
-
 void LiberarParedes(ParedeNode* head); 
 
 #endif

@@ -4,7 +4,8 @@
 #include "game_over.h"
 #include "paredes.h"
 #include "cenario.h"
-#include "audio.h" 
+#include "audio.h"
+#include "neve.h" 
 
 typedef enum GameScreen { MENU, GAMEPLAY, GAMEOVER } GameScreen;
 
@@ -15,11 +16,13 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Meu Jogo Vertical");
     
-    
-    InitAudio(); 
+    InitAudio();
     InitTelaInicial();
     InitGameOver();
     InitCenario();
+    InitPersonagemAssets();
+    InitParedesAssets();
+    InitNeve(); 
     
     SetTargetFPS(60);
 
@@ -50,12 +53,15 @@ int main(void)
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
+                    InitNeve();
                 }
                 break;
 
             case GAMEPLAY:
                 UpdatePersonagem(&player);
                 VerificarColisaoParedes(listaParedes, &player);
+                UpdateNeve(); 
+                
                 camera.target.y -= velocidadeCamera;
                 velocidadeCamera += 0.0005f; 
 
@@ -71,12 +77,14 @@ int main(void)
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
+                    InitNeve(); 
                 }
                 else if (acao == 2) currentScreen = MENU;
                 break;
         }
 
         BeginDrawing();
+            
             switch(currentScreen) 
             {
                 case MENU:
@@ -85,11 +93,16 @@ int main(void)
 
                 case GAMEPLAY:
                     ClearBackground(RAYWHITE);
+                    
                     DrawCenario(); 
+                    DrawNeve();    
+                    
                     BeginMode2D(camera);
+                        
                         DrawParedes(listaParedes); 
                         DrawPersonagem(player);
                     EndMode2D();
+                    
                     DrawText(TextFormat("Altura: %.0f", -player.posicao.y), 10, 10, 20, BLACK);
                     break;
 
@@ -97,6 +110,7 @@ int main(void)
                     DrawGameOver();
                     break;
             }
+
         EndDrawing();
     }
 
@@ -104,6 +118,9 @@ int main(void)
     UnloadGameOver();
     UnloadCenario();
     UnloadAudio();
+    UnloadPersonagemAssets();
+    UnloadParedesAssets();
+   
     LiberarParedes(listaParedes); 
 
     CloseWindow();

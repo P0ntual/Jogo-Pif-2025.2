@@ -52,6 +52,7 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
             novoCentroX = novoX + (largura / 2);
         }
 
+       
         AdicionarParede(&lista, (Rectangle){ novoX, novoY, largura, 30 });
 
         ultimoY = novoY;

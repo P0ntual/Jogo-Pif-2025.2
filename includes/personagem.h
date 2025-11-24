@@ -3,18 +3,21 @@
 
 #include "raylib.h"
 
-
 typedef struct Personagem{
     Vector2 posicao;
     float velocidade;
     float gravidade;
     float raio;
-    Color color; 
+    Color color;
 } Personagem;
+
+
+void InitPersonagemAssets();   
+void UnloadPersonagemAssets(); 
 
 
 void InitPersonagem(Personagem* p);
 void UpdatePersonagem(Personagem* p);
 void DrawPersonagem(Personagem p);
 
-#endif 
+#endif
