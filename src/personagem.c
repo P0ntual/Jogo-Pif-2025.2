@@ -1,9 +1,12 @@
 #include "personagem.h"
 #include "raylib.h"
 #include <stdio.h>
+#include <stdbool.h>
+
 
 #define G_FORCA 0.8f
 #define FORCA_PULO 18.0f
+
 
 static Texture2D spritePersonagem;
 
@@ -16,6 +19,23 @@ void UnloadPersonagemAssets() {
     UnloadTexture(spritePersonagem);
 }
 
+void LoadPersonagemRunningAssets(Personagem *p) {
+    char nomeArquivo[64];
+    for (int i = 0; i < NUM_SPRITES_CORRIDA; i++) {
+        // Formata o nome do arquivo, ex: "assets/images/p1r.png"
+        sprintf(nomeArquivo, "assets/images/p%dr.png", i + 1);
+
+        p->spritesCorrida[i] = LoadTexture(nomeArquivo);
+        SetTextureFilter(p->spritesCorrida[i], TEXTURE_FILTER_POINT);
+    }
+}
+
+void UnloadPersonagemRunningAssets(Personagem *p) {
+    for (int i = 0; i < NUM_SPRITES_CORRIDA; i++) {
+        UnloadTexture(p->spritesCorrida[i]);
+    }
+}
+
 void InitPersonagem(Personagem *p)
 {
     p->posicao = (Vector2){ 200, 360 };
@@ -24,23 +44,46 @@ void InitPersonagem(Personagem *p)
     p->raio = 20.0f; 
     p->color = WHITE;
     
-    
     p->direcao = 1.0f; 
+    
+    LoadPersonagemRunningAssets(p); 
+    p->frameAtual = 0;
+    p->timerAnimacao = 0.0f;
+    p->estaCorrendo = false;
 }
 
 void UpdatePersonagem(Personagem *p)
 {
-    
+    bool moveuHorizontalmente = false; 
+
     if (IsKeyDown(KEY_RIGHT)) {
         p->posicao.x += p->velocidade;
-        p->direcao = 1.0f; 
+        p->direcao = 1.0f;
+        moveuHorizontalmente = true;
     }
     if (IsKeyDown(KEY_LEFT)) {
         p->posicao.x -= p->velocidade;
-        p->direcao = -1.0f; 
+        p->direcao = -1.0f;
+        moveuHorizontalmente = true;
     }
-
-    if (IsKeyPressed(KEY_SPACE) && p->gravidade >= 0 && p->gravidade <= 1.0f) {
+    
+    if (moveuHorizontalmente) {
+        p->estaCorrendo = true;
+        p->timerAnimacao += GetFrameTime(); 
+        
+        if (p->timerAnimacao >= VELOCIDADE_ANIMACAO) {
+            p->frameAtual++;
+            if (p->frameAtual >= NUM_SPRITES_CORRIDA) {
+                p->frameAtual = 0;
+            }
+            p->timerAnimacao = 0.0f; 
+        }
+    } else {
+        p->estaCorrendo = false;
+        p->frameAtual = 0;
+    }
+    
+    if (IsKeyPressed(KEY_SPACE) && p->gravidade >= 0 && p->gravidade <= G_FORCA * 2.0f) {
         p->gravidade = -FORCA_PULO;
     }
 
@@ -50,21 +93,35 @@ void UpdatePersonagem(Personagem *p)
 
 void DrawPersonagem(Personagem p)
 {
-    if (spritePersonagem.id <= 0) {
+    Texture2D spriteParaDesenhar;
+    
+
+    if (p.estaCorrendo) {
+      
+        spriteParaDesenhar = p.spritesCorrida[p.frameAtual];
+    } else {
+       
+        spriteParaDesenhar = spritePersonagem;
+    }
+    
+    if (spriteParaDesenhar.id <= 0) {
         DrawCircleV(p.posicao, p.raio, RED);
         return;
     }
+    
+   
     Rectangle source = { 
         0.0f, 
         0.0f, 
-        (float)spritePersonagem.width * p.direcao, 
-        (float)spritePersonagem.height 
+        (float)spriteParaDesenhar.width * p.direcao, 
+        (float)spriteParaDesenhar.height 
     };
 
     float escalaVisual = 5.5f; 
 
     float destWidth = p.raio * escalaVisual; 
     float destHeight = p.raio * escalaVisual;
+    
    
     Rectangle dest = {
         p.posicao.x - (destWidth / 2.0f), 
@@ -75,5 +132,6 @@ void DrawPersonagem(Personagem p)
 
     Vector2 origin = { 0.0f, 0.0f };
 
-    DrawTexturePro(spritePersonagem, source, dest, origin, 0.0f, p.color);
+  
+    DrawTexturePro(spriteParaDesenhar, source, dest, origin, 0.0f, p.color);
 }

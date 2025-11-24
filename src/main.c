@@ -21,6 +21,7 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Meu Jogo Vertical");
     
+    
     InitAudio();
     InitTelaInicial();
     InitGameOver();
@@ -33,11 +34,13 @@ int main(void)
 
     SetTargetFPS(60);
 
+    
     Personagem player;
-    InitPersonagem(&player);
+    InitPersonagem(&player); 
 
     ParedeNode* listaParedes = InicializarParedes(screenWidth, screenHeight);
 
+    
     Camera2D camera = { 0 };
     camera.target = (Vector2){ 0, 0 };
     camera.offset = (Vector2){ 0, 0 };
@@ -58,6 +61,7 @@ int main(void)
                 if (UpdateTelaInicial() == 1) {
                     currentScreen = GAMEPLAY;
                     
+                    
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
@@ -73,9 +77,11 @@ int main(void)
                 VerificarColisaoParedes(listaParedes, &player);
                 UpdateNeve(); 
                 
+              
                 camera.target.y -= velocidadeCamera;
                 velocidadeCamera += 0.0005f; 
 
+                
                 if (player.posicao.y > camera.target.y + screenHeight + 50) {
                     currentScreen = GAMEOVER;
                 }
@@ -85,6 +91,7 @@ int main(void)
                 int acao = UpdateGameOver();
                 if (acao == 1) { 
                     currentScreen = GAMEPLAY;
+                    
                     
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
@@ -111,14 +118,14 @@ int main(void)
                     ClearBackground(RAYWHITE);
                     
                     DrawCenario(); 
-                    DrawNeve();    
+                    DrawNeve();
                     
                     BeginMode2D(camera);
                         DrawParedes(listaParedes); 
                         DrawPersonagem(player);
                     EndMode2D();
                     
-
+                    
                     float alturaAtual = (360.0f - player.posicao.y) / 10.0f;
                     if (alturaAtual < 0) alturaAtual = 0;
 
@@ -139,14 +146,14 @@ int main(void)
                     float larguraCaixa = tamanhoTexto.x + (padding * 2);
                     float alturaCaixa = 80.0f;
 
-                 
+                    
                     DrawRectangle(0, 0, (int)larguraCaixa, (int)alturaCaixa, (Color){ 20, 20, 20, 230 });
                     
                    
                     DrawLineEx((Vector2){0, alturaCaixa}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
                     DrawLineEx((Vector2){larguraCaixa, 0}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
 
-             
+                   
                     Vector2 posicaoTexto = { padding, (alturaCaixa - tamanhoTexto.y) / 2.0f };
 
                     if (fonteInterface.texture.id > 0) {
@@ -165,14 +172,19 @@ int main(void)
         EndDrawing();
     }
 
+    
     UnloadTelaInicial();
     UnloadGameOver();
     UnloadCenario();
     UnloadAudio();
-    UnloadPersonagemAssets();
+    
+   
+    UnloadPersonagemRunningAssets(&player); 
+    UnloadPersonagemAssets(); 
+    
     UnloadParedesAssets();
     UnloadFont(fonteInterface);
-   
+    
     LiberarParedes(listaParedes); 
 
     CloseWindow();

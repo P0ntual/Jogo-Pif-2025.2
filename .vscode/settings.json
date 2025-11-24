@@ -3,6 +3,7 @@
         "tela_inicial.h": "c",
         "math.h": "c",
         "raylib.h": "c",
-        "personagem.h": "c"
+        "personagem.h": "c",
+        "cenario.h": "c"
     }
 }
