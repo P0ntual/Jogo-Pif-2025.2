@@ -34,7 +34,7 @@ git clone [https://github.com/P0ntual/Jogo-Pif-2025.2.git](https://github.com/P0
 cd Jogo-Pif-2025.2
 
 # 2. Compilação:
-gcc src/main.c src/personagem.c src/tela_inicial.c src/game_over.c src/paredes.c src/cenario.c src/audio.c -o output/meujogo -I includes -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+gcc src/main.c src/personagem.c src/tela_inicial.c src/game_over.c src/paredes.c src/cenario.c src/audio.c src/neve.c -o output/meujogo -I includes -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 # 3. Execução: 
 ./output/meujogo
