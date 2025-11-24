@@ -1,8 +1,10 @@
 #include "raylib.h"
 #include "personagem.h"
 #include "tela_inicial.h"
-#include "game_over.h" 
+#include "game_over.h"
 #include "paredes.h"
+#include "cenario.h"
+#include "audio.h" 
 
 typedef enum GameScreen { MENU, GAMEPLAY, GAMEOVER } GameScreen;
 
@@ -11,10 +13,13 @@ int main(void)
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
-    InitWindow(screenWidth, screenHeight, "FLY");
+    InitWindow(screenWidth, screenHeight, "Meu Jogo Vertical");
     
+    
+    InitAudio(); 
     InitTelaInicial();
-    InitGameOver(); 
+    InitGameOver();
+    InitCenario();
     
     SetTargetFPS(60);
 
@@ -23,7 +28,6 @@ int main(void)
 
     ParedeNode* listaParedes = InicializarParedes(screenWidth, screenHeight);
 
-   
     Camera2D camera = { 0 };
     camera.target = (Vector2){ 0, 0 };
     camera.offset = (Vector2){ 0, 0 };
@@ -36,54 +40,43 @@ int main(void)
 
     while (!WindowShouldClose())
     {
+        UpdateAudio();
+
         switch(currentScreen) 
         {
             case MENU:
                 if (UpdateTelaInicial() == 1) {
-                   
                     currentScreen = GAMEPLAY;
                     InitPersonagem(&player);
-                    
-                    
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
-                    
-                    
                 }
                 break;
 
             case GAMEPLAY:
                 UpdatePersonagem(&player);
                 VerificarColisaoParedes(listaParedes, &player);
-
-                
                 camera.target.y -= velocidadeCamera;
                 velocidadeCamera += 0.0005f; 
 
-                
                 if (player.posicao.y > camera.target.y + screenHeight + 50) {
                     currentScreen = GAMEOVER;
                 }
                 break;
             
             case GAMEOVER:
-                
                 int acao = UpdateGameOver();
-                
-                if (acao == 1) { 
+                if (acao == 1) {
                     currentScreen = GAMEPLAY;
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
                     velocidadeCamera = 1.0f;
                 }
-                else if (acao == 2) { 
-                    currentScreen = MENU;
-                }
+                else if (acao == 2) currentScreen = MENU;
                 break;
         }
 
         BeginDrawing();
-            
             switch(currentScreen) 
             {
                 case MENU:
@@ -92,26 +85,25 @@ int main(void)
 
                 case GAMEPLAY:
                     ClearBackground(RAYWHITE);
+                    DrawCenario(); 
                     BeginMode2D(camera);
                         DrawParedes(listaParedes); 
                         DrawPersonagem(player);
                     EndMode2D();
-                    
-                    
                     DrawText(TextFormat("Altura: %.0f", -player.posicao.y), 10, 10, 20, BLACK);
                     break;
 
                 case GAMEOVER:
-                    
                     DrawGameOver();
                     break;
             }
-
         EndDrawing();
     }
 
     UnloadTelaInicial();
-    UnloadGameOver(); 
+    UnloadGameOver();
+    UnloadCenario();
+    UnloadAudio();
     LiberarParedes(listaParedes); 
 
     CloseWindow();

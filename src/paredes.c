@@ -13,54 +13,64 @@ void AdicionarParede(ParedeNode** head, Rectangle rect) {
 ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
     ParedeNode* lista = NULL; 
     
-    
     int espessura = 100;
-    
-   
     int alturaNivel = 10000; 
+    int larguraGigante = 5000;
 
+    AdicionarParede(&lista, (Rectangle){ -1000, -alturaNivel, larguraGigante, espessura }); 
     
     AdicionarParede(&lista, (Rectangle){ -espessura, -alturaNivel, espessura, alturaNivel + screenHeight });
-    
+
     AdicionarParede(&lista, (Rectangle){ screenWidth, -alturaNivel, espessura, alturaNivel + screenHeight });
 
-    
     AdicionarParede(&lista, (Rectangle){ 0, 650, screenWidth, 40 });
 
-    
     int numPlataformas = 100; 
-    float yAtual = 500;       
     
+    float ultimoY = 650;
+    float ultimoX = screenWidth / 2.0f; 
+
     for (int i = 0; i < numPlataformas; i++) {
         
-        
-        float largura = GetRandomValue(150, 400);
-        
-        
-        float x = GetRandomValue(50, screenWidth - largura - 50);
-        
-        
-        float altura = 30;
+        float distanciaY = GetRandomValue(80, 170);
+        float novoY = ultimoY - distanciaY;
 
-        
-        AdicionarParede(&lista, (Rectangle){ x, yAtual, largura, altura });
+        float desvioX = GetRandomValue(-300, 300);
+        float novoCentroX = ultimoX + desvioX;
 
        
-        yAtual -= GetRandomValue(130, 180);
+        float largura = GetRandomValue(150, 350);
+        float novoX = novoCentroX - (largura / 2);
+
+       
+        if (novoX < 50) {
+            novoX = 50;
+            novoCentroX = novoX + (largura / 2); 
+        }
+        if (novoX + largura > screenWidth - 50) {
+            novoX = screenWidth - largura - 50;
+            novoCentroX = novoX + (largura / 2);
+        }
+
+        AdicionarParede(&lista, (Rectangle){ novoX, novoY, largura, 30 });
+
+        ultimoY = novoY;
+        ultimoX = novoCentroX;
     }
 
     return lista;
 }
 
-
 void VerificarColisaoParedes(ParedeNode* head, Personagem* p) {
     ParedeNode* atual = head;
+
     while (atual != NULL) {
         Rectangle r = atual->retangulo;
         Rectangle playerRect = { p->posicao.x - p->raio, p->posicao.y - p->raio, p->raio * 2, p->raio * 2 };
 
         if (CheckCollisionRecs(playerRect, r)) {
             Rectangle interseccao = GetCollisionRec(playerRect, r);
+
             if (interseccao.width > interseccao.height) {
                 if (p->posicao.y < r.y + (r.height/2)) {
                     p->posicao.y = r.y - p->raio;
