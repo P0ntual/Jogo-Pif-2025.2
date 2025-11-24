@@ -47,3 +47,5 @@ Música: "First Snow" por Lolurio (Itch.io)
 Fundo: Winter Background (Itch.io/CraftPix)
 
 Biblioteca: Raylib
+
+Integrantes: Hugo Gomes, Eloi pontual e Teteu Diniz
