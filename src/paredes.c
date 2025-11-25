@@ -44,6 +44,8 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
     
     float ultimoY = 650;
     float ultimoX = screenWidth / 2.0f; 
+    float ultimoXInicio = ultimoX - 125.0f; // X inicial da primeira plataforma (centro - metade da largura)
+    float ultimoXFim = ultimoX + 125.0f; // X final da primeira plataforma
 
     for (int i = 0; i < numPlataformas; i++) {
         
@@ -52,28 +54,156 @@ ParedeNode* InicializarParedes(int screenWidth, int screenHeight) {
         float novoY = ultimoY - distanciaY;
 
         
-        float desvioX = GetRandomValue(-300, 300);
-        float novoCentroX = ultimoX + desvioX;
-
-        
         float largura = 250.0f; 
+        // Largura efetiva da plataforma (80% da largura da imagem, considerando pixels vazios nas bordas)
+        float larguraEfetiva = largura * 0.8f; // 200 pixels
         
-        float novoX = novoCentroX - (largura / 2);
-        
-        
-        if (novoX < 50) {
-            novoX = 50;
-            novoCentroX = novoX + (largura / 2); 
+        // Define separação mínima para evitar alinhamento (20 pixels ou 1.5% da tela)
+        float separacaoMinima = screenWidth * 0.015f;
+        if (separacaoMinima < 20.0f) {
+            separacaoMinima = 20.0f;
         }
-        if (novoX + largura > screenWidth - 50) {
-            novoX = screenWidth - largura - 50;
-            novoCentroX = novoX + (largura / 2);
+        
+        // Define separação máxima para garantir alcançabilidade (50% da largura efetiva ou 100 pixels, o que for menor)
+        // Isso garante que não fique muito difícil (pixel perfect)
+        float separacaoMaxima = larguraEfetiva * 0.5f; // 50% de 200 = 100 pixels
+        if (separacaoMaxima > 100.0f) {
+            separacaoMaxima = 100.0f;
+        }
+        
+        // Calcula o centro e as bordas efetivas da plataforma anterior
+        float ultimoCentroEfetivo = ultimoXInicio + larguraEfetiva / 2.0f;
+        float ultimoInicioEfetivo = ultimoCentroEfetivo - larguraEfetiva / 2.0f;
+        float ultimoFimEfetivo = ultimoCentroEfetivo + larguraEfetiva / 2.0f;
+        
+        // Calcula as áreas proibidas (onde não pode começar - zona muito próxima)
+        // Usa a largura efetiva para cálculos mais precisos
+        float zonaProibidaEsquerda = ultimoFimEfetivo + separacaoMinima;
+        float zonaProibidaDireita = ultimoInicioEfetivo - separacaoMinima - larguraEfetiva;
+        
+        // Calcula as zonas muito distantes (além do alcance de pulo)
+        float zonaMuitoDistanteEsquerda = ultimoFimEfetivo + separacaoMaxima;
+        float zonaMuitoDistanteDireita = ultimoInicioEfetivo - separacaoMaxima - larguraEfetiva;
+        
+        // Define os limites da tela
+        float xLimiteEsquerda = 50.0f;
+        float xLimiteDireita = screenWidth - largura - 50.0f;
+        
+        // Cria duas zonas possíveis: à esquerda ou à direita da plataforma anterior
+        float novoX;
+        
+        // Escolhe aleatoriamente se vai para a esquerda ou direita
+        int escolha = GetRandomValue(0, 1);
+        
+        if (escolha == 0) {
+            // Tenta colocar à direita da plataforma anterior
+            float xMinDireita = zonaProibidaEsquerda;
+            float xMaxDireita = (zonaMuitoDistanteEsquerda < xLimiteDireita) ? 
+                               zonaMuitoDistanteEsquerda : xLimiteDireita;
+            
+            if (xMinDireita < xMaxDireita) {
+                // Tem espaço válido à direita (entre mínimo e máximo)
+                float novoCentroX = GetRandomValue((int)xMinDireita, (int)xMaxDireita);
+                novoX = novoCentroX - larguraEfetiva / 2.0f;
+            } else {
+                // Não tem espaço à direita, coloca à esquerda
+                float xMaxEsquerda = zonaProibidaDireita;
+                float xMinEsquerda = (zonaMuitoDistanteDireita > xLimiteEsquerda) ? 
+                                     zonaMuitoDistanteDireita : xLimiteEsquerda;
+                
+                if (xMaxEsquerda > xMinEsquerda) {
+                    float novoCentroX = GetRandomValue((int)xMinEsquerda, (int)xMaxEsquerda);
+                    novoX = novoCentroX - larguraEfetiva / 2.0f;
+                } else {
+                    // Se não tem espaço válido, usa uma posição segura no centro
+                    novoX = (xLimiteEsquerda + xLimiteDireita) / 2.0f - largura / 2.0f;
+                }
+            }
+        } else {
+            // Tenta colocar à esquerda da plataforma anterior
+            float xMaxEsquerda = zonaProibidaDireita;
+            float xMinEsquerda = (zonaMuitoDistanteDireita > xLimiteEsquerda) ? 
+                                 zonaMuitoDistanteDireita : xLimiteEsquerda;
+            
+            if (xMaxEsquerda > xMinEsquerda) {
+                // Tem espaço válido à esquerda (entre mínimo e máximo)
+                float novoCentroX = GetRandomValue((int)xMinEsquerda, (int)xMaxEsquerda);
+                novoX = novoCentroX - larguraEfetiva / 2.0f;
+            } else {
+                // Não tem espaço à esquerda, coloca à direita
+                float xMinDireita = zonaProibidaEsquerda;
+                float xMaxDireita = (zonaMuitoDistanteEsquerda < xLimiteDireita) ? 
+                                   zonaMuitoDistanteEsquerda : xLimiteDireita;
+                
+                if (xMinDireita < xMaxDireita) {
+                    float novoCentroX = GetRandomValue((int)xMinDireita, (int)xMaxDireita);
+                    novoX = novoCentroX - larguraEfetiva / 2.0f;
+                } else {
+                    // Se não tem espaço válido, usa uma posição segura no centro
+                    novoX = (xLimiteEsquerda + xLimiteDireita) / 2.0f - largura / 2.0f;
+                }
+            }
+        }
+        
+        // Garantias finais de limites
+        if (novoX < xLimiteEsquerda) {
+            novoX = xLimiteEsquerda;
+        }
+        if (novoX + largura > xLimiteDireita + largura) {
+            novoX = xLimiteDireita;
+        }
+        
+        // Validação final: garante que a distância entre bordas efetivas não exceda o máximo
+        float novoCentroX = novoX + (largura / 2);
+        float novoInicioEfetivo = novoCentroX - larguraEfetiva / 2.0f;
+        float novoFimEfetivo = novoCentroX + larguraEfetiva / 2.0f;
+        
+        // Calcula distância entre as bordas efetivas
+        float distanciaEntreBordas;
+        if (novoInicioEfetivo > ultimoFimEfetivo) {
+            // Nova plataforma está à direita
+            distanciaEntreBordas = novoInicioEfetivo - ultimoFimEfetivo;
+        } else if (novoFimEfetivo < ultimoInicioEfetivo) {
+            // Nova plataforma está à esquerda
+            distanciaEntreBordas = ultimoInicioEfetivo - novoFimEfetivo;
+        } else {
+            // Há sobreposição (ok, permite)
+            distanciaEntreBordas = 0.0f;
+        }
+        
+        // Se a distância exceder o máximo, ajusta para o máximo permitido
+        if (distanciaEntreBordas > separacaoMaxima) {
+            // Ajusta para manter exatamente a separação máxima
+            if (novoInicioEfetivo > ultimoFimEfetivo) {
+                // Está à direita - move para mais perto
+                novoInicioEfetivo = ultimoFimEfetivo + separacaoMaxima;
+                novoCentroX = novoInicioEfetivo + larguraEfetiva / 2.0f;
+                novoX = novoCentroX - largura / 2.0f;
+            } else if (novoFimEfetivo < ultimoInicioEfetivo) {
+                // Está à esquerda - move para mais perto
+                novoFimEfetivo = ultimoInicioEfetivo - separacaoMaxima;
+                novoCentroX = novoFimEfetivo - larguraEfetiva / 2.0f;
+                novoX = novoCentroX - largura / 2.0f;
+            }
+            
+            // Revalida limites após ajuste
+            if (novoX < xLimiteEsquerda) {
+                novoX = xLimiteEsquerda;
+                novoCentroX = novoX + (largura / 2);
+            }
+            if (novoX + largura > xLimiteDireita + largura) {
+                novoX = xLimiteDireita;
+                novoCentroX = novoX + (largura / 2);
+            }
         }
 
         AdicionarParede(&lista, (Rectangle){ novoX, novoY, largura, 30 });
 
         ultimoY = novoY;
         ultimoX = novoCentroX;
+        // Guarda o X inicial e final considerando a posição real da imagem (não apenas a parte efetiva)
+        ultimoXInicio = novoX; // Guarda o X inicial para a próxima iteração
+        ultimoXFim = novoX + largura; // Guarda o X final para a próxima iteração
     }
 
     return lista;
