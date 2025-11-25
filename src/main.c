@@ -53,6 +53,9 @@ int main(void)
     camera.zoom = 1.0f;
 
     float velocidadeCamera = 1.0f;
+    
+    // Rastreia a maior altura alcançada
+    float maiorAltura = 0.0f;
 
     GameScreen currentScreen = MENU;
 
@@ -66,6 +69,8 @@ int main(void)
                 if (UpdateTelaInicial() == 1) {
                     currentScreen = GAMEPLAY;
                     
+                    // Reset da maior altura para nova partida
+                    maiorAltura = 0.0f;
                     
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
@@ -86,6 +91,12 @@ int main(void)
                 camera.target.y -= velocidadeCamera;
                 velocidadeCamera += 0.001f; 
 
+                // Calcula altura atual e atualiza a maior altura alcançada
+                float alturaAtual = (360.0f - player.posicao.y) / 10.0f;
+                if (alturaAtual < 0) alturaAtual = 0;
+                if (alturaAtual > maiorAltura) {
+                    maiorAltura = alturaAtual;
+                }
                 
                 if (player.posicao.y > camera.target.y + screenHeight + 50) {
                     currentScreen = GAMEOVER;
@@ -97,6 +108,8 @@ int main(void)
                 if (acao == 1) { 
                     currentScreen = GAMEPLAY;
                     
+                    // Reset da maior altura para nova tentativa
+                    maiorAltura = 0.0f;
                     
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
@@ -145,11 +158,8 @@ int main(void)
                         DrawPersonagem(player);
                     EndMode2D();
                     
-                    
-                    float alturaAtual = (360.0f - player.posicao.y) / 10.0f;
-                    if (alturaAtual < 0) alturaAtual = 0;
-
-                    const char* textoPontuacao = TextFormat("ALTURA: %.0f m", alturaAtual);
+                    // Mostra a maior altura alcançada
+                    const char* textoPontuacao = TextFormat("RECORDE: %.0f m", maiorAltura);
                     
                     float tamanhoFonte = 40.0f; 
                     float padding = 20.0f; 
