@@ -20,6 +20,7 @@ int main(void)
     const int screenHeight = 720;
 
     InitWindow(screenWidth, screenHeight, "Meu Jogo Vertical");
+    SetWindowState(FLAG_WINDOW_RESIZABLE); // Permite redimensionar a janela
     
     
     InitAudio();
@@ -33,6 +34,10 @@ int main(void)
     Font fonteInterface = LoadFontEx("assets/fonts/fonteinterface.ttf", 70, 0, 0);
 
     SetTargetFPS(60);
+
+    // Cria um RenderTexture para renderizar o jogo em resolução fixa
+    RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
+    SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
 
     
     Personagem player;
@@ -79,7 +84,7 @@ int main(void)
                 
               
                 camera.target.y -= velocidadeCamera;
-                velocidadeCamera += 0.0005f; 
+                velocidadeCamera += 0.001f; 
 
                 
                 if (player.posicao.y > camera.target.y + screenHeight + 50) {
@@ -106,7 +111,22 @@ int main(void)
                 break;
         }
 
-        BeginDrawing();
+        // Obtém o tamanho atual da janela
+        int currentWidth = GetScreenWidth();
+        int currentHeight = GetScreenHeight();
+        
+        // Calcula a escala mantendo proporções
+        float scaleX = (float)currentWidth / (float)screenWidth;
+        float scaleY = (float)currentHeight / (float)screenHeight;
+        float scale = (scaleX < scaleY) ? scaleX : scaleY; // Usa o menor para manter proporções
+        
+        // Calcula o offset para centralizar
+        int offsetX = (currentWidth - (int)(screenWidth * scale)) / 2;
+        int offsetY = (currentHeight - (int)(screenHeight * scale)) / 2;
+
+        // Renderiza para o RenderTexture
+        BeginTextureMode(target);
+            ClearBackground(RAYWHITE);
             
             switch(currentScreen) 
             {
@@ -146,15 +166,20 @@ int main(void)
                     float larguraCaixa = tamanhoTexto.x + (padding * 2);
                     float alturaCaixa = 80.0f;
 
+                    // Posição no canto inferior direito
+                    float posX = screenWidth - larguraCaixa;
+                    float posY = screenHeight - alturaCaixa;
                     
-                    DrawRectangle(0, 0, (int)larguraCaixa, (int)alturaCaixa, (Color){ 20, 20, 20, 230 });
+                    DrawRectangle((int)posX, (int)posY, (int)larguraCaixa, (int)alturaCaixa, (Color){ 20, 20, 20, 230 });
                     
-                   
-                    DrawLineEx((Vector2){0, alturaCaixa}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
-                    DrawLineEx((Vector2){larguraCaixa, 0}, (Vector2){larguraCaixa, alturaCaixa}, 4.0f, WHITE);
+                    // Bordas do container no canto inferior direito
+                    DrawLineEx((Vector2){posX, posY + alturaCaixa}, (Vector2){posX + larguraCaixa, posY + alturaCaixa}, 4.0f, WHITE);
+                    DrawLineEx((Vector2){posX + larguraCaixa, posY}, (Vector2){posX + larguraCaixa, posY + alturaCaixa}, 4.0f, WHITE);
+                    DrawLineEx((Vector2){posX, posY}, (Vector2){posX, posY + alturaCaixa}, 4.0f, WHITE);
+                    DrawLineEx((Vector2){posX, posY}, (Vector2){posX + larguraCaixa, posY}, 4.0f, WHITE);
 
                    
-                    Vector2 posicaoTexto = { padding, (alturaCaixa - tamanhoTexto.y) / 2.0f };
+                    Vector2 posicaoTexto = { posX + padding, posY + (alturaCaixa - tamanhoTexto.y) / 2.0f };
 
                     if (fonteInterface.texture.id > 0) {
                          DrawTextEx(fonteInterface, textoPontuacao, (Vector2){posicaoTexto.x+2, posicaoTexto.y+2}, tamanhoFonte, 2.0f, BLACK);
@@ -168,7 +193,17 @@ int main(void)
                     DrawGameOver();
                     break;
             }
+        EndTextureMode();
 
+        // Renderiza o RenderTexture escalado na tela
+        BeginDrawing();
+            ClearBackground(BLACK);
+            
+            // Desenha o RenderTexture escalado e centralizado
+            Rectangle source = { 0, 0, (float)target.texture.width, -(float)target.texture.height };
+            Rectangle dest = { (float)offsetX, (float)offsetY, (float)screenWidth * scale, (float)screenHeight * scale };
+            Vector2 origin = { 0, 0 };
+            DrawTexturePro(target.texture, source, dest, origin, 0.0f, WHITE);
         EndDrawing();
     }
 
@@ -185,7 +220,10 @@ int main(void)
     UnloadParedesAssets();
     UnloadFont(fonteInterface);
     
-    LiberarParedes(listaParedes); 
+    LiberarParedes(listaParedes);
+    
+    // Libera o RenderTexture
+    UnloadRenderTexture(target);
 
     CloseWindow();
     return 0;
