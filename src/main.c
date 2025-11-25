@@ -2,13 +2,15 @@
 #include <stdlib.h> 
 #include <stdio.h>
 #include <time.h> 
+#include <string.h>
 #include "personagem.h"
 #include "tela_inicial.h"
 #include "game_over.h"
 #include "paredes.h"
 #include "cenario.h"
 #include "audio.h"
-#include "neve.h" 
+#include "neve.h"
+#include "ranking.h" 
 
 typedef enum GameScreen { MENU, GAMEPLAY, GAMEOVER } GameScreen;
 
@@ -26,6 +28,7 @@ int main(void)
     InitAudio();
     InitTelaInicial();
     InitGameOver();
+    InitRanking();
     InitCenario();
     InitPersonagemAssets();
     InitParedesAssets();
@@ -56,6 +59,15 @@ int main(void)
     
     // Rastreia a maior altura alcançada
     float maiorAltura = 0.0f;
+    
+    // Sistema de ranking
+    Ranking ranking;
+    CarregarRanking(&ranking);
+    
+    // Controle do input de nome no game over
+    #define MAX_NAME_LENGTH 20
+    char nomeJogador[MAX_NAME_LENGTH] = {0};
+    int nomeFoiSalvo = 0;
 
     GameScreen currentScreen = MENU;
 
@@ -100,16 +112,28 @@ int main(void)
                 
                 if (player.posicao.y > camera.target.y + screenHeight + 50) {
                     currentScreen = GAMEOVER;
+                    // Reset do estado do nome para nova entrada
+                    nomeFoiSalvo = 0;
+                    memset(nomeJogador, 0, sizeof(nomeJogador));
                 }
                 break;
             
             case GAMEOVER:
-                int acao = UpdateGameOver();
-                if (acao == 1) { 
+                int acao = UpdateGameOver(nomeJogador, &nomeFoiSalvo);
+                
+                // Se o nome foi salvo pela primeira vez, adiciona ao ranking
+                if (nomeFoiSalvo == 1 && strlen(nomeJogador) > 0 && maiorAltura > 0) {
+                    AdicionarScore(&ranking, nomeJogador, maiorAltura);
+                    nomeFoiSalvo = 2; // Marca como já processado para evitar duplicatas
+                }
+                
+                if (acao == 1) {
                     currentScreen = GAMEPLAY;
                     
                     // Reset da maior altura para nova tentativa
                     maiorAltura = 0.0f;
+                    nomeFoiSalvo = 0;
+                    memset(nomeJogador, 0, sizeof(nomeJogador));
                     
                     InitPersonagem(&player);
                     camera.target = (Vector2){ 0, 0 };
@@ -120,6 +144,8 @@ int main(void)
                 }
                 else if (acao == 2) { 
                      currentScreen = MENU;
+                     nomeFoiSalvo = 0;
+                     memset(nomeJogador, 0, sizeof(nomeJogador));
                 }
                 break;
         }
@@ -200,7 +226,11 @@ int main(void)
                     break;
 
                 case GAMEOVER:
-                    DrawGameOver();
+                    DrawGameOver(maiorAltura, &ranking);
+                    // Se o nome ainda não foi salvo, mostra o pop-up
+                    if (!nomeFoiSalvo) {
+                        DrawNomeInput(nomeJogador, maiorAltura);
+                    }
                     break;
             }
         EndTextureMode();
@@ -220,6 +250,7 @@ int main(void)
     
     UnloadTelaInicial();
     UnloadGameOver();
+    UnloadRanking();
     UnloadCenario();
     UnloadAudio();
     
