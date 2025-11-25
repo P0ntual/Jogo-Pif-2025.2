@@ -113,14 +113,27 @@ void DrawPersonagem(Personagem p)
     Rectangle source = { 
         0.0f, 
         0.0f, 
-        (float)spriteParaDesenhar.width * p.direcao, 
+        (float)spriteParaDesenhar.width, 
         (float)spriteParaDesenhar.height 
     };
 
+    // Define uma altura de destino fixa para manter consistência visual
+    // Baseado no sprite parado que tem 44 pixels de altura
     float escalaVisual = 5.5f; 
-
-    float destWidth = p.raio * escalaVisual; 
-    float destHeight = p.raio * escalaVisual;
+    float alturaDestinoFixa = p.raio * escalaVisual;
+    
+    // Calcula a escala baseada na altura do sprite atual
+    // Isso mantém todos os sprites com a mesma altura visual
+    float escala = alturaDestinoFixa / (float)spriteParaDesenhar.height;
+    
+    // Calcula as dimensões de destino mantendo a proporção do sprite
+    float destWidth = (float)spriteParaDesenhar.width * escala;
+    float destHeight = alturaDestinoFixa;
+    
+    // Ajusta o source para flip horizontal quando direcao < 0
+    if (p.direcao < 0.0f) {
+        source.width = -source.width;
+    }
     
    
     Rectangle dest = {
