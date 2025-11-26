@@ -9,14 +9,19 @@
 
 
 static Texture2D spritePersonagem;
+static Texture2D spritePulo;
 
 void InitPersonagemAssets() {
     spritePersonagem = LoadTexture("assets/images/personagem.png");
     SetTextureFilter(spritePersonagem, TEXTURE_FILTER_POINT);
+    
+    spritePulo = LoadTexture("assets/images/Jump.png");
+    SetTextureFilter(spritePulo, TEXTURE_FILTER_POINT);
 }
 
 void UnloadPersonagemAssets() {
     UnloadTexture(spritePersonagem);
+    UnloadTexture(spritePulo);
 }
 
 void LoadPersonagemRunningAssets(Personagem *p) {
@@ -95,12 +100,17 @@ void DrawPersonagem(Personagem p)
 {
     Texture2D spriteParaDesenhar;
     
-
-    if (p.estaCorrendo) {
-      
+    // Verifica se está pulando (gravidade negativa significa subindo)
+    bool estaPulando = p.gravidade < -1.0f;
+    
+    if (estaPulando) {
+        // Usa o sprite de pulo quando está pulando
+        spriteParaDesenhar = spritePulo;
+    } else if (p.estaCorrendo) {
+        // Usa os sprites de corrida quando está correndo
         spriteParaDesenhar = p.spritesCorrida[p.frameAtual];
     } else {
-       
+        // Sprite parado
         spriteParaDesenhar = spritePersonagem;
     }
     
