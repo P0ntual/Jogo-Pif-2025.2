@@ -39,6 +39,9 @@ gcc src/main.c src/personagem.c src/tela_inicial.c src/game_over.c src/paredes.c
 # 3. Execução: 
 ./output/meujogo
 
+# NOTA: 
+caso a pasta output nao apareça, você deve realizar o seguinte codigo no terminal: mkdir output 
+
 ## Créditos dos Assets
 Fonte: Polar Snow (Assets/Fonts)
 
