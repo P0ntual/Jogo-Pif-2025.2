@@ -22,7 +22,6 @@ int main(void)
     const int screenHeight = 720;
 
     InitWindow(screenWidth, screenHeight, "Meu Jogo Vertical");
-    SetWindowState(FLAG_WINDOW_RESIZABLE); // Permite redimensionar a janela
     
     
     InitAudio();
