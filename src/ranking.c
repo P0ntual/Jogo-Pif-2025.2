@@ -117,7 +117,6 @@ void SalvarRanking(Ranking* ranking) {
 }
 
 void AdicionarScore(Ranking* ranking, const char* nome, float pontuacao) {
-    // Verifica se o nome já existe no ranking
     int nomeExiste = -1;
     for (int i = 0; i < ranking->count; i++) {
         if (strcmp(ranking->scores[i].nome, nome) == 0) {
@@ -127,36 +126,29 @@ void AdicionarScore(Ranking* ranking, const char* nome, float pontuacao) {
     }
     
     if (nomeExiste >= 0) {
-        // Nome já existe, atualiza apenas se o novo score for maior
         if (pontuacao > ranking->scores[nomeExiste].pontuacao) {
             ranking->scores[nomeExiste].pontuacao = pontuacao;
         } else {
-            // Novo score não é maior, não faz nada
             return;
         }
     } else {
-        // Nome não existe, adiciona novo score
         if (ranking->count < MAX_SCORES) {
             strncpy(ranking->scores[ranking->count].nome, nome, MAX_NAME_LENGTH - 1);
             ranking->scores[ranking->count].nome[MAX_NAME_LENGTH - 1] = '\0';
             ranking->scores[ranking->count].pontuacao = pontuacao;
             ranking->count++;
         } else {
-            // Verifica se a pontuação é maior que o menor score
             float menorPontuacao = ranking->scores[ranking->count - 1].pontuacao;
             if (pontuacao > menorPontuacao) {
-                // Substitui o último (menor) score
                 strncpy(ranking->scores[ranking->count - 1].nome, nome, MAX_NAME_LENGTH - 1);
                 ranking->scores[ranking->count - 1].nome[MAX_NAME_LENGTH - 1] = '\0';
                 ranking->scores[ranking->count - 1].pontuacao = pontuacao;
             } else {
-                // Pontuação muito baixa, não adiciona
                 return;
             }
         }
     }
     
-    // Ordena por pontuação decrescente
     for (int i = 0; i < ranking->count - 1; i++) {
         for (int j = i + 1; j < ranking->count; j++) {
             if (ranking->scores[i].pontuacao < ranking->scores[j].pontuacao) {

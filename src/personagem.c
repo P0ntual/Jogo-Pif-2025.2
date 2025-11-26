@@ -39,9 +39,9 @@ void UnloadPersonagemRunningAssets(Personagem *p) {
 void InitPersonagem(Personagem *p)
 {
     p->posicao = (Vector2){ 200, 360 };
-    p->velocidade = 5.0f;
+    p->velocidade = 6.5f;
     p->gravidade = 0.0f;
-    p->raio = 20.0f; 
+    p->raio = 15.0f; 
     p->color = WHITE;
     
     p->direcao = 1.0f; 
