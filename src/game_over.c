@@ -199,7 +199,7 @@ int UpdateGameOver(char* nomeJogador, int* nomeFoiSalvo) {
         float btnLargura = 400.0f;
         float btnAltura = 60.0f;
         float btnEspacamento = 20.0f;
-        float btnY = GetScreenHeight() - 150.0f;
+        float btnY = GetScreenHeight() - 200.0f;
         
         Vector2 mousePoint = GetMousePosition();
         
