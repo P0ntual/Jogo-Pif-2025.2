@@ -41,6 +41,7 @@ gcc src/main.c src/personagem.c src/tela_inicial.c src/game_over.c src/paredes.c
 
 # NOTA: 
 caso a pasta output nao apareça, você deve realizar o seguinte codigo no terminal: mkdir output 
+e compilar de novo
 
 ## Créditos dos Assets
 Fonte: Polar Snow (Assets/Fonts)
