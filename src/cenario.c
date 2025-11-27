@@ -14,12 +14,9 @@ void DrawCenario() {
     
     Rectangle fonte = { 0, 0, texturaFundo.width, texturaFundo.height };
     
-    
     Rectangle destino = { 0, 0, GetScreenWidth(), GetScreenHeight() };
     
-   
     Vector2 origem = { 0, 0 };
-    
     
     DrawTexturePro(texturaFundo, fonte, destino, origem, 0.0f, WHITE);
 }

@@ -1,8 +1,6 @@
 #ifndef RANKING_H
 #define RANKING_H
-
 #include "raylib.h"
-
 #define MAX_SCORES 10
 #define MAX_NAME_LENGTH 20
 #define RANKING_FILE "ranking.json"

@@ -9,7 +9,6 @@ void InitAudio() {
     InitAudioDevice();
 
     musicaFundo = LoadMusicStream("assets/sounds/musica.ogg");
-    
     SetMusicVolume(musicaFundo, 0.5f);
     PlayMusicStream(musicaFundo);
 }

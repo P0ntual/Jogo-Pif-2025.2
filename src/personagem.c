@@ -27,7 +27,6 @@ void UnloadPersonagemAssets() {
 void LoadPersonagemRunningAssets(Personagem *p) {
     char nomeArquivo[64];
     for (int i = 0; i < NUM_SPRITES_CORRIDA; i++) {
-        // Formata o nome do arquivo, ex: "assets/images/p1r.png"
         sprintf(nomeArquivo, "assets/images/p%dr.png", i + 1);
 
         p->spritesCorrida[i] = LoadTexture(nomeArquivo);
@@ -100,17 +99,16 @@ void DrawPersonagem(Personagem p)
 {
     Texture2D spriteParaDesenhar;
     
-    // Verifica se está pulando (gravidade negativa significa subindo)
     bool estaPulando = p.gravidade < -1.0f;
     
     if (estaPulando) {
-        // Usa o sprite de pulo quando está pulando
+        
         spriteParaDesenhar = spritePulo;
     } else if (p.estaCorrendo) {
-        // Usa os sprites de corrida quando está correndo
+       
         spriteParaDesenhar = p.spritesCorrida[p.frameAtual];
     } else {
-        // Sprite parado
+       
         spriteParaDesenhar = spritePersonagem;
     }
     
@@ -127,20 +125,15 @@ void DrawPersonagem(Personagem p)
         (float)spriteParaDesenhar.height 
     };
 
-    // Define uma altura de destino fixa para manter consistência visual
-    // Baseado no sprite parado que tem 44 pixels de altura
     float escalaVisual = 5.5f; 
     float alturaDestinoFixa = p.raio * escalaVisual;
     
-    // Calcula a escala baseada na altura do sprite atual
-    // Isso mantém todos os sprites com a mesma altura visual
     float escala = alturaDestinoFixa / (float)spriteParaDesenhar.height;
     
-    // Calcula as dimensões de destino mantendo a proporção do sprite
+    
     float destWidth = (float)spriteParaDesenhar.width * escala;
     float destHeight = alturaDestinoFixa;
     
-    // Ajusta o source para flip horizontal quando direcao < 0
     if (p.direcao < 0.0f) {
         source.width = -source.width;
     }

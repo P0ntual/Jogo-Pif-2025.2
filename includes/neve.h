@@ -1,6 +1,5 @@
 #ifndef NEVE_H_
 #define NEVE_H_
-
 #include "raylib.h"
 #define MAX_FLOCOS 50
 

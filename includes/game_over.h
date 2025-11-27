@@ -1,6 +1,5 @@
 #ifndef TELA_GAMEOVER_H_
 #define TELA_GAMEOVER_H_
-
 #include "raylib.h"
 #include "ranking.h"
 

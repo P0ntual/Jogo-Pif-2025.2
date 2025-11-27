@@ -15,10 +15,7 @@ typedef struct Personagem {
     float gravidade;
     float raio;
     Color color;
-    
     float direcao; 
-    
-    
     Texture2D spritesCorrida[NUM_SPRITES_CORRIDA];
     int frameAtual;        
     float timerAnimacao;   

@@ -1,7 +1,7 @@
 #ifndef PAREDES_H
 #define PAREDES_H
-
 #include "raylib.h"
+
 struct Personagem; 
 
 typedef struct ParedeNode {
