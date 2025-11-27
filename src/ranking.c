@@ -177,7 +177,7 @@ void DesenharRanking(Ranking* ranking, Font fonte, float x, float y, float taman
     float linhaY = y + dimTitulo.y + 20.0f;
     float espacamento = tamanhoFonte + 10.0f;
     
-    int maxMostrar = (ranking->count < 5) ? ranking->count : 5; // Mostra top 5
+    int maxMostrar = (ranking->count < 5) ? ranking->count : 5; 
     
     for (int i = 0; i < maxMostrar; i++) {
         char linha[100];
