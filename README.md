@@ -52,3 +52,6 @@ Fundo: Winter Background (Itch.io/CraftPix)
 Biblioteca: Raylib
 
 Integrantes: Hugo Gomes, Eloi pontual e Teteu Diniz
+
+# Vídeo Do Jogo: 
+https://www.youtube.com/watch?v=OErtT2dlsC0
