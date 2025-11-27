@@ -4,6 +4,10 @@
 #include <string.h>
 #include <ctype.h>
 
+// MATRIZ PARA ATENDER O REQUISITO DA DISCIPLINA
+char rankingMatriz[MAX_SCORES][MAX_NAME_LENGTH];
+float rankingPontos[MAX_SCORES];
+void AtualizarMatrizRanking(Ranking* ranking);
 static Font fonteRanking;
 
 void InitRanking() {
@@ -158,7 +162,7 @@ void AdicionarScore(Ranking* ranking, const char* nome, float pontuacao) {
             }
         }
     }
-    
+    AtualizarMatrizRanking(ranking);
     SalvarRanking(ranking);
 }
 
@@ -189,3 +193,11 @@ void DesenharRanking(Ranking* ranking, Font fonte, float x, float y, float taman
     }
 }
 
+void AtualizarMatrizRanking(Ranking* ranking) {
+    for (int i = 0; i < ranking->count; i++) {
+        strncpy(rankingMatriz[i], ranking->scores[i].nome, MAX_NAME_LENGTH - 1);
+        rankingMatriz[i][MAX_NAME_LENGTH - 1] = '\0';
+
+        rankingPontos[i] = ranking->scores[i].pontuacao;
+    }
+}
