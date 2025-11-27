@@ -4,7 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 
-// MATRIZ PARA ATENDER O REQUISITO DA DISCIPLINA
 char rankingMatriz[MAX_SCORES][MAX_NAME_LENGTH];
 float rankingPontos[MAX_SCORES];
 void AtualizarMatrizRanking(Ranking* ranking);
